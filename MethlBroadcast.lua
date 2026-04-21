@@ -18,6 +18,7 @@ local DEFAULTS = {
     worldChannelName = "World",
     intervalPreset = "60",
     customInterval = 180,
+    minimapAngle = 225,
 }
 
 -- Runtime state.
@@ -337,8 +338,9 @@ function MethlBroadcast:CreateUI()
     messageEditBox:SetWidth(398)
     messageEditBox:SetScript("OnTextChanged", function(selfBox)
         MethlBroadcast.db.message = selfBox:GetText() or ""
-        local _, height = selfBox:GetTextBounds()
-        selfBox:SetHeight(math.max(120, height + 20))
+        local lineHeight = 14
+        local numLines = math.max(selfBox:GetNumLines(), 1)
+        selfBox:SetHeight(math.max(120, numLines * lineHeight + 20))
         messageScroll:UpdateScrollChildRect()
     end)
     messageEditBox:SetScript("OnEscapePressed", function(selfBox)
@@ -517,6 +519,81 @@ function MethlBroadcast:CreateUI()
     self:UpdateStatusDisplay()
 end
 
+function MethlBroadcast:UpdateMinimapButtonPosition()
+    if not self.minimapButton then
+        return
+    end
+
+    local angle = tonumber(self.db.minimapAngle) or DEFAULTS.minimapAngle
+    local radius = 80
+    local radians = math.rad(angle)
+    local x = math.cos(radians) * radius
+    local y = math.sin(radians) * radius
+    self.minimapButton:SetPoint("CENTER", Minimap, "CENTER", x, y)
+end
+
+function MethlBroadcast:CreateMinimapButton()
+    if self.minimapButton then
+        self:UpdateMinimapButtonPosition()
+        return
+    end
+
+    local button = CreateFrame("Button", "MethlBroadcastMinimapButton", Minimap)
+    button:SetWidth(32)
+    button:SetHeight(32)
+    button:SetFrameStrata("MEDIUM")
+    button:SetMovable(true)
+    button:EnableMouse(true)
+    button:RegisterForClicks("LeftButtonUp")
+    button:RegisterForDrag("LeftButton")
+
+    local icon = button:CreateTexture(nil, "BACKGROUND")
+    icon:SetWidth(20)
+    icon:SetHeight(20)
+    icon:SetPoint("CENTER", 0, 0)
+    icon:SetTexture("Interface\\Icons\\INV_Misc_Note_01")
+    icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
+
+    local border = button:CreateTexture(nil, "OVERLAY")
+    border:SetTexture("Interface\\Minimap\\MiniMap-TrackingBorder")
+    border:SetWidth(54)
+    border:SetHeight(54)
+    border:SetPoint("TOPLEFT")
+
+    button:SetScript("OnClick", function()
+        MethlBroadcast:ToggleFrame()
+    end)
+
+    button:SetScript("OnEnter", function(selfButton)
+        GameTooltip:SetOwner(selfButton, "ANCHOR_LEFT")
+        GameTooltip:SetText("MethlBroadcast")
+        GameTooltip:AddLine("Click to toggle the broadcast window.", 1, 1, 1)
+        GameTooltip:Show()
+    end)
+    button:SetScript("OnLeave", function()
+        GameTooltip:Hide()
+    end)
+
+    button:SetScript("OnDragStart", function(selfButton)
+        selfButton:SetScript("OnUpdate", function()
+            local scale = Minimap:GetEffectiveScale()
+            local x, y = GetCursorPosition()
+            x = x / scale
+            y = y / scale
+            local centerX, centerY = Minimap:GetCenter()
+            local angle = math.deg(math.atan2(y - centerY, x - centerX))
+            MethlBroadcast.db.minimapAngle = angle
+            MethlBroadcast:UpdateMinimapButtonPosition()
+        end)
+    end)
+    button:SetScript("OnDragStop", function(selfButton)
+        selfButton:SetScript("OnUpdate", nil)
+    end)
+
+    self.minimapButton = button
+    self:UpdateMinimapButtonPosition()
+end
+
 -- Toggle main frame visibility via slash commands.
 function MethlBroadcast:ToggleFrame()
     if not self.frame then
@@ -550,6 +627,7 @@ eventFrame:SetScript("OnEvent", function(_, event, arg1)
 
         -- Build UI lazily on first slash use, but create now so settings reflect immediately.
         MethlBroadcast:CreateUI()
+        MethlBroadcast:CreateMinimapButton()
     elseif event == "PLAYER_LOGOUT" then
         -- Ensure runtime DB reference is persisted.
         MethlBroadcastDB = MethlBroadcast.db or MethlBroadcastDB
