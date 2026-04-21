@@ -340,8 +340,10 @@ function MethlBroadcast:CreateUI()
     messageEditBox:SetWidth(398)
     messageEditBox:SetScript("OnTextChanged", function(selfBox)
         MethlBroadcast.db.message = selfBox:GetText() or ""
+        local _, lineHeight = selfBox:GetFont()
+        lineHeight = lineHeight or MESSAGE_EDITBOX_LINE_HEIGHT
         local numLines = math.max(selfBox:GetNumLines(), 1)
-        selfBox:SetHeight(math.max(120, numLines * MESSAGE_EDITBOX_LINE_HEIGHT + 20))
+        selfBox:SetHeight(math.max(120, numLines * lineHeight + 20))
         messageScroll:UpdateScrollChildRect()
     end)
     messageEditBox:SetScript("OnEscapePressed", function(selfBox)
@@ -575,12 +577,12 @@ function MethlBroadcast:CreateMinimapButton()
     end)
 
     button:SetScript("OnDragStart", function(selfButton)
+        local scale = Minimap:GetEffectiveScale()
+        local centerX, centerY = Minimap:GetCenter()
         selfButton:SetScript("OnUpdate", function()
-            local scale = Minimap:GetEffectiveScale()
             local x, y = GetCursorPosition()
             x = x / scale
             y = y / scale
-            local centerX, centerY = Minimap:GetCenter()
             local angle = math.deg(math.atan2(y - centerY, x - centerX))
             MethlBroadcast.db.minimapAngle = angle
             MethlBroadcast:UpdateMinimapButtonPosition()
