@@ -3,7 +3,7 @@ MethlBroadcast
 World of Warcraft 3.3.5 addon for broadcasting a custom message on a repeating timer.
 ]]
 
-local ADDON_NAME = ...
+local addonName = ...
 local MethlBroadcast = {}
 
 -- Default settings used to initialize missing SavedVariables keys.
@@ -536,7 +536,7 @@ eventFrame:RegisterEvent("ADDON_LOADED")
 eventFrame:RegisterEvent("PLAYER_LOGOUT")
 
 eventFrame:SetScript("OnEvent", function(_, event, arg1)
-    if event == "ADDON_LOADED" and arg1 == ADDON_NAME then
+    if event == "ADDON_LOADED" and arg1 == addonName then
         -- Load SavedVariables and backfill missing keys.
         MethlBroadcastDB = ApplyDefaults(MethlBroadcastDB, DEFAULTS)
         MethlBroadcast.db = MethlBroadcastDB
