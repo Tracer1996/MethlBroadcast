@@ -1,0 +1,8 @@
+## Interface: 30300
+## Title: MethlBroadcast
+## Notes: Broadcast messages to LFG, World, and General on a recurring timer.
+## Author: Tracer1996
+## Version: 1.0.0
+## SavedVariables: MethlBroadcastDB
+
+MethlBroadcast.lua
