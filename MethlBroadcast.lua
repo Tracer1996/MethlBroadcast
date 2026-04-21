@@ -562,10 +562,6 @@ eventFrame:SetScript("OnUpdate", function(_, delta)
     end
 
     local interval = MethlBroadcast:GetCurrentInterval()
-    if interval <= 0 then
-        return
-    end
-
     MethlBroadcast.elapsed = MethlBroadcast.elapsed + delta
     if MethlBroadcast.elapsed >= interval then
         MethlBroadcast:BroadcastNow()
