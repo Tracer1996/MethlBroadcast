@@ -5,6 +5,8 @@ World of Warcraft 3.3.5 addon for broadcasting a custom message on a repeating t
 
 local addonName = ...
 local MethlBroadcast = {}
+local MESSAGE_EDITBOX_LINE_HEIGHT = 14
+local MINIMAP_BUTTON_RADIUS = 80
 
 -- Default settings used to initialize missing SavedVariables keys.
 local DEFAULTS = {
@@ -338,9 +340,8 @@ function MethlBroadcast:CreateUI()
     messageEditBox:SetWidth(398)
     messageEditBox:SetScript("OnTextChanged", function(selfBox)
         MethlBroadcast.db.message = selfBox:GetText() or ""
-        local lineHeight = 14
         local numLines = math.max(selfBox:GetNumLines(), 1)
-        selfBox:SetHeight(math.max(120, numLines * lineHeight + 20))
+        selfBox:SetHeight(math.max(120, numLines * MESSAGE_EDITBOX_LINE_HEIGHT + 20))
         messageScroll:UpdateScrollChildRect()
     end)
     messageEditBox:SetScript("OnEscapePressed", function(selfBox)
@@ -525,10 +526,9 @@ function MethlBroadcast:UpdateMinimapButtonPosition()
     end
 
     local angle = tonumber(self.db.minimapAngle) or DEFAULTS.minimapAngle
-    local radius = 80
     local radians = math.rad(angle)
-    local x = math.cos(radians) * radius
-    local y = math.sin(radians) * radius
+    local x = math.cos(radians) * MINIMAP_BUTTON_RADIUS
+    local y = math.sin(radians) * MINIMAP_BUTTON_RADIUS
     self.minimapButton:SetPoint("CENTER", Minimap, "CENTER", x, y)
 end
 
