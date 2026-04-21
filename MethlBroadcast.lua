@@ -118,7 +118,7 @@ function MethlBroadcast:GetTargetChannels()
     if self.db.channels.general then
         local generalNum = GetChannelName("General")
         if generalNum and generalNum > 0 then
-            table.insert(channels, { label = "General", number = 1 })
+            table.insert(channels, { label = "General", number = generalNum })
         elseif not self.missingChannelWarnings.general then
             PrintMessage("Warning: General channel not found or not joined.")
             self.missingChannelWarnings.general = true
@@ -389,7 +389,7 @@ function MethlBroadcast:CreateUI()
     -- General channel checkbox.
     local generalCheck = CreateFrame("CheckButton", "MethlBroadcastGeneralCheck", frame, "UICheckButtonTemplate")
     generalCheck:SetPoint("TOPLEFT", channelsLabel, "BOTTOMLEFT", 0, -6)
-    getglobal(generalCheck:GetName() .. "Text"):SetText("General (Ch. 1)")
+    _G[generalCheck:GetName() .. "Text"]:SetText("General (Ch. 1)")
     generalCheck:SetChecked(self.db.channels.general)
     generalCheck:SetScript("OnClick", function(selfCheck)
         MethlBroadcast.db.channels.general = selfCheck:GetChecked() and true or false
@@ -398,7 +398,7 @@ function MethlBroadcast:CreateUI()
     -- LFG channel checkbox.
     local lfgCheck = CreateFrame("CheckButton", "MethlBroadcastLFGCheck", frame, "UICheckButtonTemplate")
     lfgCheck:SetPoint("TOPLEFT", generalCheck, "BOTTOMLEFT", 0, -4)
-    getglobal(lfgCheck:GetName() .. "Text"):SetText("LookingForGroup")
+    _G[lfgCheck:GetName() .. "Text"]:SetText("LookingForGroup")
     lfgCheck:SetChecked(self.db.channels.lfg)
     lfgCheck:SetScript("OnClick", function(selfCheck)
         MethlBroadcast.db.channels.lfg = selfCheck:GetChecked() and true or false
@@ -407,7 +407,7 @@ function MethlBroadcast:CreateUI()
     -- World channel checkbox + name box.
     local worldCheck = CreateFrame("CheckButton", "MethlBroadcastWorldCheck", frame, "UICheckButtonTemplate")
     worldCheck:SetPoint("TOPLEFT", lfgCheck, "BOTTOMLEFT", 0, -4)
-    getglobal(worldCheck:GetName() .. "Text"):SetText("World Channel:")
+    _G[worldCheck:GetName() .. "Text"]:SetText("World Channel:")
     worldCheck:SetChecked(self.db.channels.world)
     worldCheck:SetScript("OnClick", function(selfCheck)
         MethlBroadcast.db.channels.world = selfCheck:GetChecked() and true or false
