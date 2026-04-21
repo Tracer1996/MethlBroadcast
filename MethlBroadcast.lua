@@ -340,7 +340,8 @@ function MethlBroadcast:CreateUI()
     messageEditBox:SetWidth(398)
     messageEditBox:SetScript("OnTextChanged", function(selfBox)
         MethlBroadcast.db.message = selfBox:GetText() or ""
-        local numLines = math.max(selfBox:GetNumLines(), 1)
+        local numLines = (selfBox.GetNumLines and selfBox:GetNumLines()) or 1
+        numLines = math.max(numLines, 1)
         selfBox:SetHeight(math.max(120, numLines * MESSAGE_EDITBOX_LINE_HEIGHT + 20))
         messageScroll:UpdateScrollChildRect()
     end)
